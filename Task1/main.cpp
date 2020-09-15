@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 
-using namespace std;
+using namespace std; // это надо убрать
 
 int charToInt(char c)
 {
@@ -35,6 +35,7 @@ char intToChar(int i)
 vector<int> transformToVector(string str)
 {
     vector<int> vec;
+    vec.reserve(str.size()); // улучшит производительность
 
     for (char c : str)
     {
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
     string bigNumber = argv[1];
     string smallNumber = argv[2];
 
-    if (bigNumber < smallNumber)
+    if (bigNumber < smallNumber) //а точно лексикографическое сравнение нужно?
     {
         swap(bigNumber, smallNumber);
     }
@@ -89,7 +90,7 @@ int main(int argc, char** argv)
 
             int sum = vecBigNumber[posVecBigNumber] + vecSmallNumber[posVecSmallNumber];
             vecBigNumber[posVecBigNumber] = sum % 16;
-            vecBigNumber[posVecBigNumber - 1] += sum / 16;
+            vecBigNumber[posVecBigNumber - 1] += sum / 16; //как это будет работать при posVecBigNumber = 0? кажется тут ошибка.
         }
 
         int remainder = 0;
@@ -123,7 +124,7 @@ int main(int argc, char** argv)
     catch (int i)
     {
         cout << "Conversion intToChar failed with param " << i << endl;
-        return -1;
+        return -1; // а точно надо -1 вернуть?
     }
     catch (char c)
     {

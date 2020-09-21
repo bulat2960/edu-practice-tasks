@@ -2,8 +2,6 @@
 #include <vector>
 #include <cmath>
 
-using namespace std; // это надо убрать
-
 int charToInt(char c)
 {
     if (c >= '0' && c <= '9')
@@ -32,10 +30,10 @@ char intToChar(int i)
     throw i;
 }
 
-vector<int> transformToVector(string str)
+std::vector<int> transformToVector(std::string str)
 {
-    vector<int> vec;
-    vec.reserve(str.size()); // улучшит производительность
+    std::vector<int> vec;
+    vec.reserve(str.size());
 
     for (char c : str)
     {
@@ -45,13 +43,19 @@ vector<int> transformToVector(string str)
     return vec;
 }
 
-string restoreFromVector(vector<int> vec)
+std::string restoreFromVector(std::vector<int> vec)
 {
-    string str;
+    std::string str;
 
-    for (int i : vec)
+    int startPos = 0;
+    while (vec[startPos] == 0)
     {
-        str.push_back(intToChar(i));
+        startPos++;
+    }
+
+    for (int i = startPos; i < vec.size(); i++)
+    {
+        str.push_back(intToChar(vec[i]));
     }
 
     return str;
@@ -61,56 +65,58 @@ int main(int argc, char** argv)
 {
     if (argc != 3)
     {
-        cout << "Wrong number of parameters!" << endl;
+        std::cout << "Wrong number of parameters!" << std::endl;
         return -1;
     }
 
-    string bigNumber = argv[1];
-    string smallNumber = argv[2];
+    std::cout << "Your input: 0x" << argv[1] << ", 0x" << argv[2] << std::endl;
 
-    if (bigNumber < smallNumber) //а точно лексикографическое сравнение нужно?
+    std::string bigNumber = argv[1];
+    std::string smallNumber = argv[2];
+
+    if (bigNumber.size() < smallNumber.size())
     {
-        swap(bigNumber, smallNumber);
+        std::swap(bigNumber, smallNumber);
     }
 
     try
     {
         // Task 1: sum of 2 hex numbers
 
-        vector<int> vecBigNumber = transformToVector(bigNumber);
-        vector<int> vecSmallNumber = transformToVector(smallNumber);
+        std::vector<int> vecBigNumber = transformToVector(bigNumber);
+        std::vector<int> vecSmallNumber = transformToVector(smallNumber);
 
-        int minLength = min(vecBigNumber.size(), vecSmallNumber.size());
-        int maxLength = max(vecBigNumber.size(), vecSmallNumber.size());
+        std::vector<int> resultVector;
+        resultVector.resize(vecBigNumber.size() + 1);
 
-        for (int i = 0; i < minLength; i++)
+        int maxLength = std::max(vecBigNumber.size(), vecSmallNumber.size());
+
+        for (int i = 0; i < maxLength; i++)
         {
             int posVecBigNumber = vecBigNumber.size() - i - 1;
             int posVecSmallNumber = vecSmallNumber.size() - i - 1;
+            int posResultVector = resultVector.size() - i - 1;
 
-            int sum = vecBigNumber[posVecBigNumber] + vecSmallNumber[posVecSmallNumber];
-            vecBigNumber[posVecBigNumber] = sum % 16;
-            vecBigNumber[posVecBigNumber - 1] += sum / 16; //как это будет работать при posVecBigNumber = 0? кажется тут ошибка.
+            int vecBigNumberValue = vecBigNumber[posVecBigNumber];
+            int vecSmallNumberValue = (posVecSmallNumber >= 0) ? vecSmallNumber[posVecSmallNumber] : 0;
+
+            resultVector[posResultVector] = vecBigNumberValue + vecSmallNumberValue;
         }
 
-        int remainder = 0;
-        string remainderString;
-
-        if (vecBigNumber[0] >= 16)
+        for (int i = resultVector.size() - 1; i > 0; i--)
         {
-            remainder = vecBigNumber[0] / 16;
-            vecBigNumber[0] %= 16;
-            remainderString = string(1, intToChar(remainder));
+            resultVector[i - 1] += resultVector[i] / 16;
+            resultVector[i] %= 16;
         }
 
-        string result = remainderString + restoreFromVector(vecBigNumber);
+        std::string result = restoreFromVector(resultVector);
 
-        cout << result << endl;
+        std::cout << "Hexadecimal representation of the sum is: 0x" << result << std::endl;
 
 
         // Task 2: dec representation of hex number
 
-        vector<int> vecNumber = transformToVector(result);
+        std::vector<int> vecNumber = transformToVector(result);
 
         int power = 0;
         int sum = 0;
@@ -119,16 +125,16 @@ int main(int argc, char** argv)
             sum += vecNumber[i] * pow(16, power++);
         }
 
-        cout << sum << endl;
+        std::cout << "Decimal representation of the sum is: " << sum << std::endl;
     }
     catch (int i)
     {
-        cout << "Conversion intToChar failed with param " << i << endl;
-        return -1; // а точно надо -1 вернуть?
+        std::cout << "Conversion intToChar failed with param " << i << std::endl;
+        return -1;
     }
     catch (char c)
     {
-        cout << "Conversion charToInt failed with param " << c << endl;
+        std::cout << "Conversion charToInt failed with param " << c << std::endl;
         return -1;
     }
 

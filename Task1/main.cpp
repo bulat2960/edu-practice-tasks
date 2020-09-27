@@ -30,7 +30,7 @@ char intToChar(int i)
     throw i;
 }
 
-std::vector<int> transformToVector(std::string str)
+std::vector<int> transformToVector(const std::string& str)
 {
     std::vector<int> vec;
     vec.reserve(str.size());
@@ -43,13 +43,14 @@ std::vector<int> transformToVector(std::string str)
     return vec;
 }
 
-std::string restoreFromVector(std::vector<int> vec)
+std::string restoreFromVector(const std::vector<int>& vec)
 {
     std::string str;
 
     int startPos = 0;
-    while (vec[startPos] == 0)
-    {
+    while (vec[startPos] == 0)  //a что если вектор окажется полностью из нулей? здесь мы упадем
+    {    //лучше использовать  std::find_if с последующей проверкой итератора
+
         startPos++;
     }
 
